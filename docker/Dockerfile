@@ -62,7 +62,7 @@ RUN git clone https://github.com/vitvakatu/exonum-java-binding && \
   cargo install --path . --debug
 
 WORKDIR /app
-COPY run_ejb_app.sh .
+COPY ./*.sh ./
 COPY log_config.xml .
 RUN mv exonum-java-binding/exonum-java-binding-core/rust/target/debug/deps/libjava_bindings.so . && \
   mkdir -p core && \
@@ -70,8 +70,3 @@ RUN mv exonum-java-binding/exonum-java-binding-core/rust/target/debug/deps/libja
   cp exonum-java-binding/exonum-java-binding-common/target/*.jar core/classes && \
   cp exonum-java-binding/exonum-java-binding-core/target/ejb-core-classpath.txt core/ejb-core-classpath && \
   rm -rf exonum-java-binding
-
-EXPOSE 6001
-EXPOSE 6000
-
-ENTRYPOINT ["./run_ejb_app.sh"]
