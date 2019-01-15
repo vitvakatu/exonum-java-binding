@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
+if [[ $# -eq 0 ]] ; then
+    echo 'No arguments, exiting'
+    exit 0
+fi
+
 CLASSPATH=$1
 MODULE_NAME=$2
 
-CLASSPATH="${CLASSPATH}:$(cat exonum-java-binding/exonum-java-binding-core/target/ejb-core-classpath.txt)"
+CLASSPATH="${CLASSPATH}:$(cat core/ejb-core-classpath):core/classes/exonum-java-binding-common-0.4-rc-draft.jar"
 
 JAVA_HOME="${JAVA_HOME:-$(java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home' | awk '{print $3}')}/"
 echo "JAVA_HOME=${JAVA_HOME}"
@@ -15,20 +20,17 @@ echo "JVM_LIB_PATH=${JVM_LIB_PATH}"
 CURRENT_DIR=$(pwd)
 echo "CURRENT_DIR=${CURRENT_DIR}"
 
-EJB_ROOT=$(realpath "../../..")
-echo "PROJ_ROOT=${EJB_ROOT}"
-
 echo "<====> TEMPLATE <====>"
 
 EJB_LIBPATH="${JVM_LIB_PATH}:."
 
-LD_LIBRARY_PATH=.:${JVM_LIB_PATH} ejb-app generate-template \
+LD_LIBRARY_PATH=${EJB_LIBPATH} ejb-app generate-template \
   common.toml \
   --validators-count 1
 
 echo "<====> GENERATE <====>"
 
-LD_LIBRARY_PATH=.:${JVM_LIB_PATH} ejb-app generate-config \
+LD_LIBRARY_PATH=${EJB_LIBPATH} ejb-app generate-config \
   common.toml pub.toml sec.toml \
   --ejb-classpath $CLASSPATH \
   --ejb-libpath $EJB_LIBPATH \
@@ -37,7 +39,7 @@ LD_LIBRARY_PATH=.:${JVM_LIB_PATH} ejb-app generate-config \
 
 echo "<====> FINALIZE <====>"
 
-LD_LIBRARY_PATH=.:${JVM_LIB_PATH} ejb-app finalize \
+LD_LIBRARY_PATH=${EJB_LIBPATH} ejb-app finalize \
   sec.toml node.toml \
   --ejb-module-name $MODULE_NAME \
   --ejb-port 6000 \
@@ -45,5 +47,5 @@ LD_LIBRARY_PATH=.:${JVM_LIB_PATH} ejb-app finalize \
 
 echo "<====> RUN <====>"
 
-LD_LIBRARY_PATH=.:${JVM_LIB_PATH} ejb-app run \
+LD_LIBRARY_PATH=${EJB_LIBPATH} ejb-app run \
   -d db0 -c node.toml --public-api-address 0.0.0.0:6001
