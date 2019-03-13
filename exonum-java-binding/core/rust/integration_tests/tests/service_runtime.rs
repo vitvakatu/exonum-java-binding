@@ -20,9 +20,7 @@ extern crate java_bindings;
 
 use exonum_testkit::TestKitBuilder;
 use integration_tests::vm::get_fakes_classpath;
-use java_bindings::{
-    Config, InternalConfig, JavaServiceRuntime, PrivateConfig, PublicConfig,
-};
+use java_bindings::{Config, InternalConfig, JavaServiceRuntime, PrivateConfig, PublicConfig};
 
 const TEST_SERVICE_MODULE_NAME: &str =
     "com.exonum.binding.fakes.services.service.TestServiceModule";
@@ -41,7 +39,7 @@ fn bootstrap() {
         port: 6000,
         args_prepend: vec![],
         args_append: vec![],
-        jvm_debug_socket: None
+        jvm_debug_socket: None,
     };
 
     let service_runtime = JavaServiceRuntime::get_or_create(
@@ -55,9 +53,9 @@ fn bootstrap() {
         },
     );
 
-    let mut testkit = TestKitBuilder::validator()
-        .with_service(service_runtime.service_proxy())
-        .create();
+    let service = service_runtime.create_service("", TEST_SERVICE_MODULE_NAME);
+
+    let mut testkit = TestKitBuilder::validator().with_service(service).create();
 
     testkit.create_block();
 }
