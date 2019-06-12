@@ -29,6 +29,9 @@ serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0.39"
 
+[patch.crates-io]
+exonum_rocksdb = { path = "../../../../exonum_rocksdb" }
+
 [dev-dependencies]
 tempfile = "3"
 
