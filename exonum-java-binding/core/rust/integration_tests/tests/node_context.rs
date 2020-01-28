@@ -35,7 +35,7 @@ use java_bindings::{
         node::{ApiSender, ExternalMessage},
         runtime::{AnyTx, CallInfo},
     },
-    exonum_merkledb::TemporaryDB,
+    merkledb::TemporaryDB,
     jni::JavaVM,
     Executor, Node,
 };

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use exonum::crypto::Hash;
-use exonum_merkledb::IndexAddress;
+use merkledb::IndexAddress;
 use exonum_proto::ProtobufConvert;
 use jni::objects::JString;
 use jni::sys::{jbyteArray, jobjectArray};

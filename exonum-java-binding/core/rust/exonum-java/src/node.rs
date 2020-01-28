@@ -18,15 +18,15 @@ use exonum_explorer_service::ExplorerFactory;
 use exonum_rust_runtime::{DefaultInstance, RustRuntime, RustRuntimeBuilder, ServiceFactory};
 use exonum_supervisor::{mode::Mode as SupervisorMode, Supervisor};
 use exonum_time::TimeServiceFactory;
+use exonum_node::{Node, NodeChannel, NodeConfig as CoreNodeConfig, NodeBuilder};
+use exonum_system_api::SystemApiPlugin;
 use java_bindings::{
     create_java_vm, create_service_runtime,
     exonum::{
         blockchain::{
             config::{GenesisConfigBuilder, InstanceInitParams},
-            Blockchain, BlockchainBuilder, BlockchainMut,
         },
-        exonum_merkledb::{Database, RocksDB},
-        node::{ApiSender, Node, NodeChannel, NodeConfig as CoreNodeConfig},
+        merkledb::{Database, RocksDB},
     },
     Command, Config, DefaultConfigManager, EjbCommand, EjbCommandResult, Executor, InternalConfig,
     JavaRuntimeProxy,
@@ -44,48 +44,24 @@ pub fn run_node(command: Command) -> Result<(), failure::Error> {
 }
 
 fn create_node(config: Config) -> Result<Node, failure::Error> {
-    let node_config = config.run_config.node_config.clone();
-    // TODO: rewrite with NodeBuilder API when it is available
-    let events_pool_capacity = &Default::default();
-    let channel = NodeChannel::new(events_pool_capacity);
-    let blockchain = create_blockchain(&config, &channel)?;
-
-    let config_manager = DefaultConfigManager::new(config.run_config.node_config_path);
-
-    Ok(Node::with_blockchain(
-        blockchain,
-        channel,
-        node_config.into(),
-        Some(Box::new(config_manager)),
-    ))
-}
-
-fn create_blockchain(
-    config: &Config,
-    channel: &NodeChannel,
-) -> Result<BlockchainMut, failure::Error> {
+    let database = create_database(&config)?;
     let node_config: CoreNodeConfig = config.run_config.node_config.clone().into();
-    let database = create_database(config)?;
-    let keypair = node_config.service_keypair();
-    let api_sender = ApiSender::new(channel.api_requests.0.clone());
-
-    let blockchain = Blockchain::new(database, keypair, api_sender);
-
     let supervisor_service = supervisor_service(&config);
-    let genesis_config = GenesisConfigBuilder::with_consensus_config(node_config.consensus)
+    let genesis_config = GenesisConfigBuilder::with_consensus_config(node_config.consensus.clone())
         .with_artifact(Supervisor.artifact_id())
         .with_instance(supervisor_service)
         .with_artifact(ExplorerFactory.artifact_id())
         .with_instance(ExplorerFactory.default_instance())
         .build();
 
-    let rust_runtime = create_rust_runtime(channel);
     let java_runtime = create_java_runtime(&config);
 
-    Ok(BlockchainBuilder::new(blockchain, genesis_config)
-        .with_runtime(rust_runtime)
+    let node = NodeBuilder::new(database, node_config, genesis_config)
+        .with_runtime_fn(|api| create_rust_runtime(api))
         .with_runtime(java_runtime)
-        .build())
+        .with_config_manager(DefaultConfigManager::new(config.run_config.node_config_path))
+        .with_plugin(SystemApiPlugin).build();
+    Ok(node)
 }
 
 fn create_rust_runtime(channel: &NodeChannel) -> RustRuntime {

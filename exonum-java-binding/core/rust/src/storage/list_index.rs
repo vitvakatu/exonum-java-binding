@@ -14,7 +14,7 @@
 
 use std::{panic, ptr};
 
-use exonum_merkledb::{access::FromAccess, indexes::list::Iter, Fork, ListIndex, Snapshot};
+use merkledb::{access::FromAccess, indexes::list::Iter, Fork, ListIndex, Snapshot};
 use jni::{
     objects::{JClass, JObject, JString},
     sys::{jboolean, jbyteArray, jlong},

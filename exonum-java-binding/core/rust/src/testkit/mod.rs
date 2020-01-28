@@ -21,14 +21,15 @@ use std::{panic, sync::Arc};
 use exonum::{
     blockchain::{config::InstanceInitParams, Block},
     crypto::{PublicKey, SecretKey},
-    exonum_merkledb::{self, BinaryValue},
+    merkledb::{self as exonum_merkledb, BinaryValue},
     helpers::ValidatorId,
     runtime::ArtifactSpec,
 };
 use exonum_proto::ProtobufConvert;
+use exonum_derive::BinaryValue;
 use exonum_rust_runtime::ServiceFactory;
 use exonum_testkit::{TestKit, TestKitBuilder};
-use exonum_time::{time_provider::TimeProvider, TimeServiceFactory};
+use exonum_time::{TimeProvider, TimeServiceFactory};
 use jni::{
     objects::{JClass, JObject, JValue},
     sys::{jboolean, jbyteArray, jobjectArray, jshort},
@@ -108,7 +109,7 @@ pub extern "system" fn Java_com_exonum_binding_testkit_TestKit_nativeCreateTestK
 
             builder
         };
-        let mut testkit = builder.create();
+        let mut testkit = builder.build();
         // Mount API handlers
         testkit.api();
         Ok(to_handle(testkit))

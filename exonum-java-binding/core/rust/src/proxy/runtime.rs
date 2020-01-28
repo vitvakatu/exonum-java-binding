@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+// TODO: remove
+#![allow(unreachable_code, unused_imports, unused_variables)]
+
 use exonum::{
     blockchain::Blockchain,
     crypto::{Hash, PublicKey},
-    exonum_merkledb::{BinaryValue, Snapshot},
+    merkledb::{BinaryValue, Snapshot},
     runtime::{
         migrations::{InitMigrationError, MigrationScript},
         versioning::Version,
@@ -138,13 +141,13 @@ impl Runtime for JavaRuntimeProxy {
     fn initiate_adding_service(
         &self,
         context: ExecutionContext<'_>,
-        spec: &InstanceSpec,
+        artifact_id: &ArtifactId,
         parameters: Vec<u8>,
     ) -> Result<(), ExecutionError> {
-        let serialized_instance_spec: Vec<u8> = spec.to_bytes();
+        let serialized_instance_spec: Vec<u8> = unimplemented!();
 
         jni_call_default(&self.exec, |env| {
-            let fork_handle = to_handle(View::from_ref_mut_fork(context.fork));
+            let fork_handle = unimplemented!();
             let instance_spec =
                 JObject::from(env.byte_array_from_slice(&serialized_instance_spec)?);
             let configuration = JObject::from(env.byte_array_from_slice(&parameters)?);
@@ -161,6 +164,15 @@ impl Runtime for JavaRuntimeProxy {
             )
             .and_then(JValue::v)
         })
+    }
+
+    fn initiate_resuming_service(
+        &self,
+        context: ExecutionContext,
+        artifact: &ArtifactId,
+        parameters: Vec<u8>,
+    ) -> Result<(), ExecutionError> {
+        unimplemented!()
     }
 
     fn update_service_status(
@@ -202,30 +214,30 @@ impl Runtime for JavaRuntimeProxy {
     fn execute(
         &self,
         context: ExecutionContext,
-        call_info: &CallInfo,
+        method_id: u32,
         arguments: &[u8],
     ) -> Result<(), ExecutionError> {
         // todo: Replace this abomination (8-parameter method, arguments that make sense only
         //   in some cases) with a single protobuf message or other alternative [ECR-3872]
-        let tx_info: (InstanceId, Hash, PublicKey) = match context.caller {
+        let tx_info: (InstanceId, Hash, PublicKey) = match context.caller() {
             Caller::Transaction {
-                hash: message_hash,
                 author: author_pk,
-            } => (0, message_hash, author_pk),
+            } => (0, context.transaction_hash().unwrap(), author_pk.clone()),
             Caller::Service {
                 instance_id: caller_id,
-            } => (caller_id, Hash::default(), PublicKey::default()),
+            } => (*caller_id, Hash::default(), PublicKey::default()),
             Caller::Blockchain => {
                 return Err(Error::NotSupportedOperation.into());
             }
+            _ => unreachable!()
         };
 
         jni_call_transaction(&self.exec, |env| {
-            let service_id = call_info.instance_id as i32;
-            let interface_name = JObject::from(env.new_string(context.interface_name)?);
-            let tx_id = call_info.method_id as i32;
+            let service_id = unimplemented!();
+            let interface_name = JObject::from(env.new_string(context.interface_name())?);
+            let tx_id = method_id as i32;
             let args = JObject::from(env.byte_array_from_slice(arguments)?);
-            let view_handle = to_handle(View::from_ref_fork(context.fork));
+            let view_handle = unimplemented!();
             let caller_id = tx_info.0;
             let message_hash = tx_info.1.to_bytes();
             let message_hash = JObject::from(env.byte_array_from_slice(&message_hash)?);
@@ -254,7 +266,6 @@ impl Runtime for JavaRuntimeProxy {
     fn before_transactions(
         &self,
         _context: ExecutionContext,
-        _instance_id: InstanceId,
     ) -> Result<(), ExecutionError> {
         // TODO(ECR-4016): implement
         Ok(())
@@ -263,10 +274,10 @@ impl Runtime for JavaRuntimeProxy {
     fn after_transactions(
         &self,
         context: ExecutionContext,
-        instance_id: InstanceId,
     ) -> Result<(), ExecutionError> {
+        let instance_id = context.instance().id;
         jni_call_transaction(&self.exec, |env| {
-            let view_handle = to_handle(View::from_ref_mut_fork(context.fork));
+            let view_handle = unimplemented!();
             env.call_method_unchecked(
                 self.runtime_adapter.as_obj(),
                 runtime_adapter::after_transactions_id(),

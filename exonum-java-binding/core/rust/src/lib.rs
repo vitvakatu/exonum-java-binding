@@ -51,7 +51,7 @@ extern crate futures;
 #[cfg(test)]
 extern crate tempfile;
 
-pub use exonum::exonum_merkledb;
+pub use exonum::merkledb;
 
 mod cmd;
 pub mod handle;

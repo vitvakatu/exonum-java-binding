@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use exonum_merkledb::{Fork, Snapshot};
+use merkledb::{Fork, Snapshot};
 use jni::{objects::JClass, JNIEnv};
 
 use handle::{self, Handle};
@@ -202,7 +202,7 @@ pub extern "system" fn Java_com_exonum_binding_core_storage_database_Accesses_na
 
 #[cfg(test)]
 mod tests {
-    use exonum_merkledb::{
+    use merkledb::{
         access::{Access, FromAccess, RawAccess},
         Database, Entry, TemporaryDB,
     };

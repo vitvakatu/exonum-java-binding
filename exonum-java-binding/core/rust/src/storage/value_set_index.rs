@@ -14,7 +14,7 @@
 
 use std::{panic, ptr};
 
-use exonum_merkledb::{
+use merkledb::{
     access::FromAccess,
     indexes::value_set::{Hashes, Iter as IndexIter},
     Fork, Snapshot, ValueSetIndex,

@@ -20,7 +20,7 @@ use exonum::{
     messages::Verified,
     runtime::{AnyTx, CallInfo},
 };
-use exonum_merkledb::{ObjectHash, Snapshot};
+use merkledb::{ObjectHash, Snapshot};
 use failure;
 use futures::Future;
 use jni::objects::JClass;
@@ -98,13 +98,8 @@ pub extern "system" fn Java_com_exonum_binding_core_service_NodeProxy_nativeSubm
             &env,
             || -> JniResult<jbyteArray> {
                 let args = env.convert_byte_array(arguments)?;
-                let tx = AnyTx {
-                    call_info: CallInfo {
-                        instance_id: instance_id as u32,
-                        method_id: method_id as u32,
-                    },
-                    arguments: args,
-                };
+                let call_info = CallInfo::new(instance_id as u32, method_id as u32);
+                let tx = AnyTx::new(call_info, args);
 
                 match node.submit(tx) {
                     Ok(tx_hash) => convert_hash(&env, &tx_hash),

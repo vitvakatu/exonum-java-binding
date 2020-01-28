@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use exonum_merkledb::{Database, Patch, TemporaryDB};
+use merkledb::{Database, Patch, TemporaryDB};
 use jni::{
     objects::{JClass, JObject},
     JNIEnv,
