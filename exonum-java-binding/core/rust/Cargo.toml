@@ -55,6 +55,7 @@ rpath = true
 [patch.crates-io]
 exonum = { git = "https://github.com/exonum/exonum", rev = "805dee9e" }
 exonum-build = { git = "https://github.com/exonum/exonum", rev = "805dee9e" }
+exonum-btc-anchoring = { git = "https://github.com/vitvakatu/exonum-btc-anchoring", rev = "249cca2c" }
 exonum-cli = { git = "https://github.com/exonum/exonum", rev = "805dee9e" }
 exonum-crypto = { git = "https://github.com/exonum/exonum", rev = "805dee9e" }
 exonum-derive = { git = "https://github.com/exonum/exonum", rev = "805dee9e" }

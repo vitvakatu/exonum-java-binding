@@ -22,6 +22,7 @@ extern crate exonum_supervisor;
 extern crate exonum_system_api;
 extern crate exonum_time;
 extern crate java_bindings;
+extern crate exonum_btc_anchoring;
 #[macro_use]
 extern crate log;
 
