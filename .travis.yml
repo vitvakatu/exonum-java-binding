@@ -10,7 +10,7 @@ branches:
     # … and release branches, e.g. jlc/v0.2.0-release
     - /^.+-release$/
     # TODO: remove
-    - windows-support
+    - ecr-4306-travis-for-windows
 
 addons:
   apt:
