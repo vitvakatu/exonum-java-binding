@@ -50,10 +50,6 @@ jobs:
       os: windows
       language: rust
       before_install:
-        - git clone https://github.com/dmitry-timofeev/resource-loader.git
-        - cd resource-loader/
-        - ./gradlew publishToMavenLocal
-        - cd -
         - echo $PATH
         - choco install openjdk13 -y
         - choco install maven -y
@@ -62,6 +58,11 @@ jobs:
 
         - echo $PATH
         - powershell 'echo $env:Path'
+        - export JAVA_HOME="/c/Program Files/OpenJDK/jdk-13.0.2"
+        - git clone https://github.com/dmitry-timofeev/resource-loader.git
+        - cd resource-loader/
+        - ./gradlew publishToMavenLocal
+        - cd -
       script:
         - cd $TRAVIS_BUILD_DIR/exonum-java-binding
         - powershell -ExecutionPolicy Bypass -File ./run_all_tests.ps1
