@@ -50,6 +50,10 @@ jobs:
       os: windows
       language: rust
       before_install:
+        - git clone https://github.com/dmitry-timofeev/resource-loader.git
+        - cd resource-loader/
+        - ./gradlew publishToMavenLocal
+        - cd -
         - echo $PATH
         - choco install openjdk13 -y
         - choco install maven -y
