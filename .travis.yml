@@ -59,8 +59,9 @@ jobs:
         - echo $PATH
         - powershell 'echo $env:Path'
         - export JAVA_HOME="/c/Program Files/OpenJDK/jdk-13.0.2"
-        - git clone https://github.com/dmitry-timofeev/resource-loader.git
+        - git clone https://github.com/vitvakatu/resource-loader.git
         - cd resource-loader/
+        - git checkout windows-permissions
         - ./gradlew publishToMavenLocal
         - cd -
       script:
