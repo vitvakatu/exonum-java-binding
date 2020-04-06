@@ -51,14 +51,14 @@ jobs:
       language: rust
       before_install:
         - echo $PATH
-        - choco install openjdk13 -y
+        - choco install openjdk12 -y
         - choco install maven -y
         - export M2_HOME="/c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3"
-        - export PATH=$PATH:"/c/Program Files/OpenJDK/jdk-13.0.2/bin"
+        - export PATH=$PATH:"/c/Program Files/OpenJDK/jdk-12.0.2/bin"
 
         - echo $PATH
         - powershell 'echo $env:Path'
-        - export JAVA_HOME="/c/Program Files/OpenJDK/jdk-13.0.2"
+        - export JAVA_HOME="/c/Program Files/OpenJDK/jdk-12.0.2"
         - git clone https://github.com/vitvakatu/resource-loader.git
         - cd resource-loader/
         - git checkout windows-permissions
